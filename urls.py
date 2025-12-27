@@ -1,7 +1,9 @@
-from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
+from .. import views
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("api/", include("core.urls")),
+    path("tables/", views.table_dashboard),
+    path("order/<int:table_id>/<int:menu_id>/<int:qty>/", views.create_order),
+    path("bill/<int:table_id>/", views.generate_bill),
+    path("pay/<int:table_id>/", views.pay_bill),
 ]
