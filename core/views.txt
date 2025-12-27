@@ -1,1 +1,45 @@
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from .models import Table, Order, MenuItem, OrderItem, Bill
+
+def table_dashboard(request):
+    tables = Table.objects.all().values()
+    return JsonResponse(list(tables), safe=False)
+
+
+def create_order(request, table_id, menu_id, qty):
+    table = get_object_or_404(Table, id=table_id)
+    menu = get_object_or_404(MenuItem, id=menu_id)
+
+    order, _ = Order.objects.get_or_create(table=table, status="PLACED")
+    OrderItem.objects.create(order=order, menu_item=menu, quantity=qty)
+
+    return JsonResponse({"message": "Order created"})
+
+
+def generate_bill(request, table_id):
+    table = get_object_or_404(Table, id=table_id)
+    orders = Order.objects.filter(table=table)
+
+    total = 0
+    for order in orders:
+        for item in order.items.all():
+            total += item.menu_item.price * item.quantity
+
+    tax = total * 0.05
+    bill, _ = Bill.objects.get_or_create(table=table)
+    bill.total_amount = total
+    bill.tax = tax
+    bill.status = "PENDING"
+    bill.save()
+
+    table.status = "BILL_REQUESTED"
+    table.save()
+
+    return JsonResponse({"total": total, "tax": tax})
+
+def pay_bill(request, table_id):
+    bill = get_object_or_404(Bill, table_id=table_id)
+    bill.mark_paid()
+    return JsonResponse({"message": "Bill paid"})
 
