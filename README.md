@@ -1,5 +1,5 @@
 A mini **Django-based restaurant management system** to handle dine-in tables, live orders, and billing with role-based access.  
-Built as part of a **Full Stack Django Developer Take-Home Assignment**.
+IMPORTANT: admins.py, models.py, urls.py, views.py should go in Core folder and settings.py, urlsR.py in Restaurant folder
 
 ### 1. Table Management
 - Multiple tables with seating capacity
